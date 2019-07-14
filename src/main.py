@@ -1,11 +1,38 @@
+import json
+import base64
+import numpy
 from collections import Counter
-from functools import reduce
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def color_print(string, color_code, *args):
+    """Custom color printing for CLI"""
+    if len(args) > 0:
+        print(color_code, string, bcolors.ENDC, end=args[0])
+    else:
+        print(color_code, string, bcolors.ENDC)
+
+def print_title(string, *args):
+    color_print(string, bcolors.OKBLUE, *args)
+
+def print_process(string, *args):
+    color_print(string, bcolors.OKGREEN, *args)
 
 def character_frequencies(text):
     """Removes all spaces and calculates the occuring frequency of each
     caracter"""
 
-    text = text.replace(' ', '')
+    # text = text.replace(' ', '')
     number_of_characters = len(text)
     c = Counter(text)
 
@@ -60,16 +87,81 @@ def shannon_fano(list_of_characters, encoded=[], prefix=''):
         encoded.append((right_list[0], prefix))
         prefix = prefix[:-1]
 
-    return encoded
+    coding_dictionary = {}
+
+    for character, coding in encoded:
+        coding_dictionary[character[0]] = coding
+
+    return coding_dictionary
+
+def compression(text, coding_dictionary):
+
+    # text = text.replace(' ', '')
+    encoded_text = []
+    encoded_word = ''
+    text = text + ' '
+    for character in text:
+        encoded_word = encoded_word + coding_dictionary[character]
+        if character == ' ':
+            encoded_text.append(encoded_word)
+            encoded_word = ''
+
+    return encoded_text
 
 
 
 
+text = input('Provide the text to be compressed: ')
+
+length = int(input('Provide the code length: '))
+
+print_process('1. Generating the code table...', '')
+code_table = shannon_fano(character_frequencies(text))
+print_process('✓\n')
+print_process(f'Code Table: {code_table}', '\n\n')
+
+print_process('2. Compressing the input...', '')
+compressed_text = compression(text, code_table)
+print_process('✓\n')
+print_process(f'Compressed Text: {compressed_text}', '\n\n')
+
+# Kyklikos kwdikas.. to be added
+
+# Noise.. to be added
+
+print_process('3. Generating the Base64 string...', '')
+b_64 = base64.b64encode(compressed_text.encode('ascii'))
+print_process('✓\n')
+print_process(f'Base64 String: {b_64}', '\n\n')
 
 
+print_process('4. Generating the JSON...', '')
+# j = {
+#
+#     "compression_algorithm":"Fano-Shannon",
+#
+#     "code":       {
+#
+#         "name":"cyclic code",
+#
+#         "P":[[1,0,0...]],
+#
+#     }
+#
+# }
+j = json.dump(j)
+print_process('✓\n')
+print_process(f'JSON: {j}', '\n\n')
+
+# μέγεθος αρχείου, εντροπιία , τελικό μέγεθος αρχείου, εντροπία, πόσα bits προσθέθηκαν, πόσα bits διορθώθηκαν.
 
 
+print_process('4. Generating statistics...', '')
+b_64 = base64.b64encode(compressed_text.encode('ascii'))
+print_process('✓\n')
 
-text = "AAAAAAbafwfa"
-a = shannon_fano(character_frequencies(text))
-print(a)
+print_process(f'Size: {b_64}', '\n\n')
+print_process(f'Compressed Size: {b_64}', '\n\n')
+print_process(f'Entropy: {b_64}', '\n\n')
+print_process(f'Size: {b_64}', '\n\n')
+print_process(f'Size: {b_64}', '\n\n')
