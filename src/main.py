@@ -130,25 +130,25 @@ print_process(f'Compressed Text: {compressed_text}', '\n\n')
 # Noise.. to be added
 
 print_process('3. Generating the Base64 string...', '')
-b_64 = base64.b64encode(compressed_text.encode('ascii'))
+b_64 = base64.b64encode(''.join(str(e) for e in compressed_text).encode('ascii'))
 print_process('✓\n')
 print_process(f'Base64 String: {b_64}', '\n\n')
 
 
 print_process('4. Generating the JSON...', '')
-# j = {
-#
-#     "compression_algorithm":"Fano-Shannon",
-#
-#     "code":       {
-#
-#         "name":"cyclic code",
-#
-#         "P":[[1,0,0...]],
-#
-#     }
-#
-# }
+j = {
+
+    "compression_algorithm":"Fano-Shannon",
+
+    "code":       {
+
+        "name":"cyclic code",
+
+        "P":1
+
+    }
+
+}
 j = json.dump(j)
 print_process('✓\n')
 print_process(f'JSON: {j}', '\n\n')
