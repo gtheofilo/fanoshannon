@@ -1,6 +1,7 @@
 import json
 import base64
 import random
+import math
 from collections import Counter
 
 
@@ -147,20 +148,32 @@ f=open(filename,"r")
 if f.mode=="r":
     text=f.read()
 
-
+text_size = len(text) * 8
 length = int(input('Provide the code length: '))
 
 noise = int(input('Provide the noise level: '))
+
 
 print_process('1. Generating the code table...', '')
 code_table = shannon_fano(character_frequencies(text))
 print_process('✓\n')
 print_process(f'Code Table: {code_table}', '\n\n')
 
+entropy = 0
+freq = character_frequencies(text)
+for i in character_frequencies(freq):
+    entropy = entropy + i[1] * math.log(1/i[1], 2)
+print(entropy)
+
+
 print_process('2. Compressing the input...', '')
 compressed_text = compression(text, code_table)
 print_process('✓\n')
 print_process(f'Compressed Text: {compressed_text}', '\n\n')
+comp_bits = 0
+for i in compressed_text:
+    for bit in i:
+        comp_bits = comp_bits + 1
 
 key = '1001'  # g(x) synarthsh pou ginetai h diairesh
 print_process('3. Applying the cyclic encoding...', '')
@@ -169,6 +182,10 @@ for word in compressed_text:
     cyclic_encoded.append(encodeData(word, key))
 print_process('✓\n')
 print_process(f'Cyclic Encoded: {cyclic_encoded}', '\n\n')
+added_bits = 0
+for i in cyclic_encoded:
+    for bit in i:
+        added_bits = added_bits + 1
 
 code_with_noise = []
 print_process('3. Applying noise...', '')
@@ -191,7 +208,7 @@ b_64 = base64.b64encode(
 print_process('✓\n')
 print_process(f'Base64 String: {b_64}', '\n\n')
 
-print_process('4. Generating the JSON...', '')
+print_process('5. Generating the JSON...', '')
 j = {
 
     "compression_algorithm": "Fano-Shannon",
@@ -210,17 +227,17 @@ j = {
 }
 j = json.dumps(j)
 print_process('✓\n')
+
+
+print_process('6. Sending the message...', '')
+print_process('✓\n')
 print_process(f'JSON: {j}', '\n\n')
 
-# μέγεθος αρχείου, εντροπιία , τελικό μέγεθος αρχείου, εντροπία, πόσα bits προσθέθηκαν, πόσα bits διορθώθηκαν.
-
-
-print_process('4. Generating statistics...', '')
-b_64 = base64.b64encode(compressed_text.encode('ascii'))
+compressed_size =5
+print_process('7. Generating statistics...', '')
 print_process('✓\n')
+print_process(f'Size: {text_size} bits', '\n\n')
+print_process(f'Compressed Size: {comp_bits} bits', '\n\n')
+print_process(f'Entropy: {entropy}', '\n\n')
+print_process(f'Added Bits: {added_bits - comp_bits} bits', '\n\n')
 
-print_process(f'Size: {b_64}', '\n\n')
-print_process(f'Compressed Size: {b_64}', '\n\n')
-print_process(f'Entropy: {b_64}', '\n\n')
-print_process(f'Size: {b_64}', '\n\n')
-print_process(f'Size: {b_64}', '\n\n')
