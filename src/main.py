@@ -126,6 +126,44 @@ print_process('✓\n')
 print_process(f'Compressed Text: {compressed_text}', '\n\n')
 
 # Kyklikos kwdikas.. to be added
+def xor(a, b):
+    result = []
+    for i in range(1, len(b)):
+        if a[i] == b[i]:
+            result.append('0')
+        else:
+            result.append('1')
+    return ''.join(result)
+
+def mod2div(divident, divisor):
+    pick = len(divisor)
+    tmp = divident[0 : pick]
+    while pick < len(divident):
+        if tmp[0] == '1':
+            tmp = xor(divisor, tmp) + divident[pick]
+        else:
+            tmp = xor('0'*pick, tmp) + divident[pick]
+        pick += 1
+    if tmp[0] == '1':
+        tmp = xor(divisor, tmp)
+    else:
+        tmp = xor('0'*pick, tmp)
+    checkword = tmp
+    return checkword
+
+def encodeData(data, key):
+    l_key = len(key)
+    appended_data = data + '0'*(l_key-1)
+    remainder = mod2div(appended_data, key)
+    codeword = data + remainder
+    return codeword
+##################
+encoded_text = '1001010010011' ####edw antistoixa einai to diko mas teliko apo fanoShannon h mhtra me 0 kai 1
+key = '1001'                #g(x) synarthsh pou ginetai h diairesh
+
+f_message = encodeData(encoded_text,key)
+print(f_message)
+
 
 # Noise.. to be added
 
