@@ -140,7 +140,13 @@ def compression(text, coding_dictionary):
     return encoded_text
 
 
-text = input('Provide the text to be compressed: ')
+filename = input('Provide the filename to be compressed: ')
+ext='.txt'
+filename+=ext
+f=open(filename,"r")
+if f.mode=="r":
+    text=f.read()
+
 
 length = int(input('Provide the code length: '))
 
