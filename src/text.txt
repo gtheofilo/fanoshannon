@@ -1,0 +1,1 @@
+Hello world this is a message to be compressed using Fano Shannon and cyclic code 
