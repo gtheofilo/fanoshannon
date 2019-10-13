@@ -164,107 +164,106 @@ def print_process(string, *args):
     color_print(string, colors.OKGREEN, *args)
 
 
+if __name__ == '__main__':
+    # Configuration of the Python Script using text file's name, noise level and
+    # code lenght
+    filename = input('Provide the filename to be compressed(must be in the same '
+                     'folder with the .py file): ')
+    filename = filename + '.txt'
+    file = open(filename, 'r')
+    if file.mode == 'r':
+        text_file = file.read()
+
+    text_size = len(text_file) * 8
+    length = int(input('Provide the code length: '))
+    noise = int(input('Provide the noise level: '))
+
+    # First Question
+    print_process('1. Generating the code table...', '')
+    char_freq = character_frequencies(text_file)
+    code_table = shannon_fano(char_freq)
+    print_process('✓\n')
+    print_process(f'Code Table: {code_table}', '\n\n')
 
 
-# Configuration of the Python Script using text file's name, noise level and
-# code lenght
-filename = input('Provide the filename to be compressed(must be in the same '
-                 'folder with the .py file): ')
-filename = filename + '.txt'
-file = open(filename, 'r')
-if file.mode == 'r':
-    text_file = file.read()
+    # Second Question
+    print_process('2. Compressing the input...', '')
+    compressed_text = compression(text_file, code_table)
+    print_process('✓\n')
+    print_process(f'Compressed Text: {compressed_text}', '\n\n')
+    comp_bits = 0
+    for i in compressed_text:
+        for bit in i:
+            comp_bits = comp_bits + 1
 
-text_size = len(text_file) * 8
-length = int(input('Provide the code length: '))
-noise = int(input('Provide the noise level: '))
+    key = '1001'  # g(x) synarthsh pou ginetai h diairesh
 
-# First Question
-print_process('1. Generating the code table...', '')
-char_freq = character_frequencies(text_file)
-code_table = shannon_fano(char_freq)
-print_process('✓\n')
-print_process(f'Code Table: {code_table}', '\n\n')
+    # Third Question
+    print_process('3. Applying the cyclic encoding...', '')
+    cyclic_encoded = []
+    for word in compressed_text:
+        cyclic_encoded.append(encodeData(word, key))
+    print_process('✓\n')
+    print_process(f'Cyclic Encoded: {cyclic_encoded}', '\n\n')
+    added_bits = 0
+    for i in cyclic_encoded:
+        for bit in i:
+            added_bits = added_bits + 1
 
+    # Fourth Question
+    code_with_noise = []
+    print_process('4. Applying noise...', '')
+    for word in cyclic_encoded:
+        randint = random.randint(0, noise)
+        temp = list(word)
+        for i in range(0, randint):
+            if temp[i] == 0:
+                temp[i] = str(1)
+            else:
+                temp[i] = str(0)
+        temp = ''.join(temp)
+        code_with_noise.append(temp)
+    print_process('✓\n')
+    print_process(f'Noise Result: {code_with_noise}', '\n\n')
 
-# Second Question
-print_process('2. Compressing the input...', '')
-compressed_text = compression(text_file, code_table)
-print_process('✓\n')
-print_process(f'Compressed Text: {compressed_text}', '\n\n')
-comp_bits = 0
-for i in compressed_text:
-    for bit in i:
-        comp_bits = comp_bits + 1
+    # Fifth Question
+    print_process('5. Generating the Base64 string...', '')
+    b_64 = base64.b64encode(
+        ''.join(str(e) for e in compressed_text).encode('ascii'))
+    print_process('✓\n')
+    print_process(f'Base64 String: {b_64}', '\n\n')
 
-key = '1001'  # g(x) synarthsh pou ginetai h diairesh
+    # Sixth Question
+    print_process('6. Generating the JSON...', '')
+    j = {
 
-# Third Question
-print_process('3. Applying the cyclic encoding...', '')
-cyclic_encoded = []
-for word in compressed_text:
-    cyclic_encoded.append(encodeData(word, key))
-print_process('✓\n')
-print_process(f'Cyclic Encoded: {cyclic_encoded}', '\n\n')
-added_bits = 0
-for i in cyclic_encoded:
-    for bit in i:
-        added_bits = added_bits + 1
+        "compression_algorithm": "Fano-Shannon",
 
-# Fourth Question
-code_with_noise = []
-print_process('4. Applying noise...', '')
-for word in cyclic_encoded:
-    randint = random.randint(0, noise)
-    temp = list(word)
-    for i in range(0, randint + 1):
-        if temp[i] == 0:
-            temp[i] = str(1)
-        else:
-            temp[i] = str(0)
-    temp = ''.join(temp)
-    code_with_noise.append(temp)
-print_process('✓\n')
-print_process(f'Noise Result: {code_with_noise}', '\n\n')
+        "code": {
 
-# Fifth Question
-print_process('5. Generating the Base64 string...', '')
-b_64 = base64.b64encode(
-    ''.join(str(e) for e in compressed_text).encode('ascii'))
-print_process('✓\n')
-print_process(f'Base64 String: {b_64}', '\n\n')
+            "name": "cyclic code",
+            "noise_level": noise,
+            "code lenght": length,
 
-# Sixth Question
-print_process('6. Generating the JSON...', '')
-j = {
+            "P": code_with_noise,
+            "base64": b_64.decode("utf-8")
 
-    "compression_algorithm": "Fano-Shannon",
-
-    "code": {
-
-        "name": "cyclic code",
-        "noise_level": noise,
-        "code lenght": length,
-
-        "P": code_with_noise,
-        "base64": b_64.decode("utf-8")
+        }
 
     }
+    j = json.dumps(j, indent=4)
+    print_process('✓\n')
 
-}
-j = json.dumps(j, indent=4)
-print_process('✓\n')
+    # Seventh Question
+    print_process('7. Sending the message...', '')
+    print_process('✓\n')
+    print_process(f'JSON: {j}', '\n\n')
 
-# Seventh Question
-print_process('7. Sending the message...', '')
-print_process('✓\n')
-print_process(f'JSON: {j}', '\n\n')
-
-compressed_size = 5
-print_process('8. Generating statistics...', '')
-print_process('✓\n')
-print_process(f'Size: {text_size} bits', '\n\n')
-print_process(f'Compressed Size: {comp_bits} bits', '\n\n')
-print_process(f'Final Size: {added_bits} bits', '\n\n')
-print_process(f'Entropy: {entropy_calculator(char_freq)}', '\n\n')
-print_process(f'Added Bits: {added_bits - comp_bits} bits', '\n\n')
+    compressed_size = 5
+    print_process('8. Generating statistics...', '')
+    print_process('✓\n')
+    print_process(f'Size: {text_size} bits', '\n\n')
+    print_process(f'Compressed Size: {comp_bits} bits', '\n\n')
+    print_process(f'Final Size: {added_bits} bits', '\n\n')
+    print_process(f'Entropy: {entropy_calculator(char_freq)}', '\n\n')
+    print_process(f'Added Bits: {added_bits - comp_bits} bits', '\n\n')
