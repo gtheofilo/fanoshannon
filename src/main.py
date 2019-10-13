@@ -8,6 +8,7 @@ from collections import Counter
 def character_frequencies(text):
     """Calculates the occuring frequency of each
     caracter"""
+
     number_of_characters = len(text)
     c = Counter(text)
 
@@ -35,6 +36,7 @@ def shannon_fano(list_of_characters, encoded=[], prefix=''):
         A dictionary variable with keys the characters and values their
         encoded string
     """
+
     frequencies_sum = 0
     isFirstIteration = True
 
@@ -80,6 +82,7 @@ def shannon_fano(list_of_characters, encoded=[], prefix=''):
 
 def compression(text, coding_dictionary):
     "Calculates the encoded string for each character of the text file"
+
     encoded_text = []
     encoded_word = ''
     text = text + ' '
@@ -98,6 +101,7 @@ def compression(text, coding_dictionary):
 
 def entropy_calculator(character_frequencies):
     """Calculates the entropy given the frequencies of the characters"""
+
     entropy = 0
     for i in character_frequencies:
         entropy = entropy + i[1] * math.log(1 / i[1], 2)
@@ -106,6 +110,7 @@ def entropy_calculator(character_frequencies):
 
 def xor(a, b):
     """Computes the XOR operation between A and B"""
+
     result = []
     for i in range(1, len(b)):
         if a[i] == b[i]:
@@ -116,6 +121,8 @@ def xor(a, b):
 
 
 def mod2div(divident, divisor):
+    """Performs a mod2div operation"""
+
     pick = len(divisor)
     tmp = divident[0: pick]
     while pick < len(divident):
@@ -133,6 +140,8 @@ def mod2div(divident, divisor):
 
 
 def encodeData(data, key):
+    """Encodes the data with the given key"""
+
     l_key = len(key)
     appended_data = data + '0' * (l_key - 1)
     remainder = mod2div(appended_data, key)
@@ -142,6 +151,7 @@ def encodeData(data, key):
 
 class colors:
     """Colors for printing the results"""""
+
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
 
@@ -150,6 +160,7 @@ class colors:
 
 def color_print(string, color_code, *args):
     """Custom color printing for CLI"""
+
     if len(args) > 0:
         print(color_code, string, colors.ENDC, end=args[0])
     else:
@@ -168,7 +179,7 @@ if __name__ == '__main__':
     # Configuration of the Python Script using text file's name, noise level and
     # code lenght
     filename = input('Provide the filename to be compressed(must be in the same '
-                     'folder with the .py file): ')
+                     'folder with the .py file), default = test_data: ')
     filename = filename + '.txt'
     file = open(filename, 'r')
     if file.mode == 'r':
@@ -177,6 +188,7 @@ if __name__ == '__main__':
     text_size = len(text_file) * 8
     length = int(input('Provide the code length: '))
     noise = int(input('Provide the noise level: '))
+    print('\n')
 
     # First Question
     print_process('1. Generating the code table...', '')
@@ -216,8 +228,12 @@ if __name__ == '__main__':
     for word in cyclic_encoded:
         randint = random.randint(0, noise)
         temp = list(word)
+
+        if noise > len(temp) - 1:
+            randint = len(temp) - 1
+
         for i in range(0, randint):
-            if temp[i] == 0:
+            if temp[i] == '0':
                 temp[i] = str(1)
             else:
                 temp[i] = str(0)
